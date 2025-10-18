@@ -25,6 +25,8 @@ const Testimonial = () => {
     <section className="my-20">
       <SectionTitle subHeading={'---What Our Clients Say---'} heading={'TESTIMONIALS'} />
 
+      
+
       <Swiper navigation={true} modules={[Navigation]} className="mySwiper max-w-6xl mx-auto">
         {reviews.map((review) => (
           <SwiperSlide key={review._id}>
