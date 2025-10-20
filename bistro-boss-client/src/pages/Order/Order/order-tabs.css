@@ -1,0 +1,67 @@
+/* Custom styles for react-tabs to match design screenshot */
+
+.react-tabs__tab-list {
+  display: flex;
+  justify-content: center;
+  gap: 4rem; /* space between tabs */
+  margin: 2.5rem 0 1rem 0; /* top spacing similar to screenshot */
+  border-bottom: none; /* remove default line */
+  padding: 0; /* remove default list padding */
+}
+
+.react-tabs__tab {
+  list-style: none;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0; /* vertical breathing room */
+  margin: 0;
+  color: #111111; /* inactive color */
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Remove default selected border/background if default css sneaks in */
+.react-tabs__tab--selected {
+  border: none;
+  background: transparent;
+  color: #BE8E2C; /* gold active color */
+}
+
+/* Gold underline under the active tab label */
+.react-tabs__tab--selected::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -10px;
+  width: 56px; /* underline width similar to screenshot */
+  height: 4px; /* thickness */
+  background-color: #BE8E2C;
+  border-radius: 2px;
+}
+
+/* Accessibility: focus ring without shifting layout */
+.react-tabs__tab:focus-visible {
+  outline: 2px solid rgba(190, 142, 44, 0.5);
+  outline-offset: 2px;
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+  .react-tabs__tab-list {
+    gap: 1.5rem;
+    margin: 1.5rem 0 0.75rem 0;
+  }
+  .react-tabs__tab {
+    font-size: 0.95rem;
+  }
+  .react-tabs__tab--selected::after {
+    width: 40px;
+    height: 3px;
+    bottom: -8px;
+  }
+}
