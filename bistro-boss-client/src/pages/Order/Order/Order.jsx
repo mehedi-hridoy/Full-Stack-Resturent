@@ -5,7 +5,7 @@ import { Tabs, TabList, Tab, TabPanel } from "react-tabs";
 import "./order-tabs.css";
 import useMenu from "../../../Hooks/useMenu";
 import FoodCard from "../../../components/FoodCard/FoodCard";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';

@@ -1,12 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import authBg from '../../../assets/others/authentication.png';
 import authIllustration from '../../../assets/others/authentication1.png';
 import { FaFacebookF, FaGoogle, FaGithub } from 'react-icons/fa6';
 import { loadCaptchaEnginge, LoadCanvasTemplate, validateCaptcha } from 'react-simple-captcha';
+import { AuthContext } from '../../../providers/AuthContext';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Login = () => {
   const [captchaOk, setCaptchaOk] = useState(false);
   const [captchaValue, setCaptchaValue] = useState('');
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const {signIn, googleSignIn} = useContext(AuthContext);
+
+  const from = location.state?.from?.pathname || "/";
+
+
 
   useEffect(() => {
     // Initialize captcha with 6 chars
@@ -16,7 +27,12 @@ const Login = () => {
   const handleCaptchaChange = (e) => {
     const v = e.target.value;
     setCaptchaValue(v);
-    setCaptchaOk(validateCaptcha(v));
+    // Only validate without triggering reload - check length first
+    if (v.length === 6) {
+      setCaptchaOk(validateCaptcha(v, false)); // false = don't reload on validation
+    } else {
+      setCaptchaOk(false);
+    }
   };
 
   const handleLogin = (event) => {
@@ -24,9 +40,64 @@ const Login = () => {
     
     if (!validateCaptcha(captchaValue)) {
       setCaptchaOk(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Captcha',
+        text: 'Please enter the correct captcha code.',
+        confirmButtonColor: '#D1A054'
+      });
       return;
     }
-    // TODO: wire to your auth flow
+
+    const form = event.target;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    signIn(email, password)
+      .then(result => {
+        const loggedUser = result.user;
+        console.log(loggedUser);
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful!',
+          text: `Welcome back, ${loggedUser.email}!`,
+          confirmButtonColor: '#D1A054',
+          timer: 2000
+        });
+        navigate(from, { replace: true });
+      })
+      .catch(error => {
+        console.log(error.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: error.message,
+          confirmButtonColor: '#D1A054'
+        });
+      });
+  };
+
+  const handleGoogle = () => {
+    googleSignIn()
+      .then((result) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful!',
+          text: `Welcome, ${result.user.displayName || result.user.email}!`,
+          confirmButtonColor: '#D1A054',
+          timer: 2000
+        });
+        navigate(from, { replace: true });
+      })
+      .catch((err) => {
+        console.log(err.message);
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: err.message,
+          confirmButtonColor: '#D1A054'
+        });
+      });
   };
 
   return (
@@ -99,19 +170,19 @@ const Login = () => {
 
           <p className="text-center mt-6">
             <span className="text-gray-600">New here? </span>
-            <a className="text-[#D1A054] font-semibold link link-hover">Create a New Account</a>
+            <Link to="/signup" className="text-[#D1A054] font-semibold link link-hover">Create a New Account</Link>
           </p>
 
           <div className="text-center mt-6">
             <p className="text-gray-700 mb-4">Or sign in with</p>
             <div className="flex items-center justify-center gap-6">
-              <button className="w-12 h-12 rounded-full bg-white border flex items-center justify-center shadow-sm">
+              <button className="w-12 h-12 rounded-full bg-white border flex items-center justify-center shadow-sm hover:bg-[#D1A054] hover:text-white hover:border-[#D1A054] transition-colors duration-300" disabled>
                 <FaFacebookF />
               </button>
-              <button className="w-12 h-12 rounded-full bg-white border flex items-center justify-center shadow-sm">
+              <button onClick={handleGoogle} type="button" className="w-12 h-12 rounded-full bg-white border flex items-center justify-center shadow-sm hover:bg-[#D1A054] hover:text-white hover:border-[#D1A054] transition-colors duration-300">
                 <FaGoogle />
               </button>
-              <button className="w-12 h-12 rounded-full bg-white border flex items-center justify-center shadow-sm">
+              <button className="w-12 h-12 rounded-full bg-white border flex items-center justify-center shadow-sm hover:bg-[#D1A054] hover:text-white hover:border-[#D1A054] transition-colors duration-300" disabled>
                 <FaGithub />
               </button>
             </div>

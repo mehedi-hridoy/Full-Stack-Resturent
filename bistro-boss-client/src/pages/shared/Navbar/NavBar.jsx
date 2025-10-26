@@ -1,12 +1,32 @@
-import React from 'react';
-import { Link } from 'react-router';
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../../../providers/AuthContext';
+import Swal from 'sweetalert2';
 
 const NavBar = () => {
+    const { user, logOut } = useContext(AuthContext);
+
+    const handleLogOut = () => {
+        logOut()
+            .then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Signed Out!',
+                    text: 'You have been successfully logged out.',
+                    confirmButtonColor: '#D1A054',
+                    timer: 2000
+                });
+            })
+            .catch(error => {
+                console.log(error.message);
+            });
+    };
+
     const navOptions = <>
      <li><Link to="/">Home</Link></li>
      <li><Link to="menu">Our Menu</Link></li>
      <li><Link to="order">Order Food</Link></li>
-     <li><Link to="login">Login</Link></li>
+     <li><Link to="secret">Secret</Link></li>
       
     </>
     return (
@@ -31,7 +51,15 @@ const NavBar = () => {
     </ul>
   </div>
   <div className="navbar-end">
-    <a className="btn">Button</a>
+    {user ? (
+      <button onClick={handleLogOut} className="btn bg-[#D1A054] text-white border-0 hover:bg-[#B5892F]">
+        SIGN OUT
+      </button>
+    ) : (
+      <Link to="/login" className="btn bg-[#D1A054] text-white border-0 hover:bg-[#B5892F]">
+        SIGN IN
+      </Link>
+    )}
   </div>
 </div>
         </div>
