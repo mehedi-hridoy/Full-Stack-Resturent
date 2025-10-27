@@ -6,6 +6,10 @@ import React from 'react';
 
 const FoodCard = ({ item }) => {
   const { image, price, name, recipe } = item || {};
+  const handleAddToCart = (food) => {
+    console.log(food);
+  }
+
 
   return (
     <div className="bg-white overflow-hidden flex flex-col shadow-sm">
@@ -24,6 +28,8 @@ const FoodCard = ({ item }) => {
 
         <div className="mt-6 flex justify-center">
           <button
+            
+            onClick={() => handleAddToCart(item)}
             className="
               inline-flex items-center justify-center cursor-pointer
               px-8 h-12 rounded-md
