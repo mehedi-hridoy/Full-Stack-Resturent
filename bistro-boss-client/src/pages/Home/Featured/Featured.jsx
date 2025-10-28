@@ -15,8 +15,8 @@ const Featured = () => {
 
         function update() {
             const rect = el.getBoundingClientRect();
-            // rect.top is distance from viewport top; we invert to create parallax
-            const speed = 0.25; // lower = subtler parallax
+            
+            const speed = 0.25; // Adjust this value to control parallax speed
             const value = -rect.top * speed;
             setBgY(value);
             ticking = false;

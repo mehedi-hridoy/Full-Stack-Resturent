@@ -1,14 +1,43 @@
-import React from 'react';
 
-// Contract
 // props.item = { _id, image, price, name, recipe }
 // Renders a card with image, top-right price badge, title, description and an Add to Cart button
 
+import Swal from "sweetalert2";
+import useAuth from "../../Hooks/useAuth";
+import { useLocation, useNavigate } from "react-router-dom";
+
 const FoodCard = ({ item }) => {
   const { image, price, name, recipe } = item || {};
-  const handleAddToCart = (food) => {
-    console.log(food);
+  const {user} = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  
+  
+  const handleAddToCart = food => {
+    if(user && user.email){
+      // TODO: send cart items to the database when logged in
+      console.log('User is logged in, add to cart functionality will be implemented here');
+      
   }
+  else {
+    // Show login prompt when user is not logged in
+    Swal.fire({
+            icon: 'warning',
+            title: 'You are not logged in',
+            text: 'Please login to add items to cart.',
+            showCancelButton: true,
+            confirmButtonColor: '#D1A054',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Login Now',
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              navigate('/login', { state: { from: location } });
+            }
+          });
+  }
+}
 
 
   return (
