@@ -7,7 +7,7 @@ import useAuth from "../../Hooks/useAuth";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const FoodCard = ({ item }) => {
-  const { image, price, name, recipe } = item || {};
+  const { image, price, name, recipe, _id } = item || {};
   const {user} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -18,6 +18,34 @@ const FoodCard = ({ item }) => {
     if(user && user.email){
       // TODO: send cart items to the database when logged in
       console.log('User is logged in, add to cart functionality will be implemented here');
+      const cartItem = {
+        menuId: _id,
+        name,
+        image,
+        price,
+        email: user.email
+      };
+      // Example POST request to add item to cart
+      axios.post('http://localhost:5000/carts', cartItem)
+        .then(response => {
+          if (response.data.insertedId) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Added to Cart',
+              text: `${name} has been added to your cart.`,
+              confirmButtonColor: '#D1A054'
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error adding item to cart:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'There was an issue adding the item to your cart. Please try again later.',
+            confirmButtonColor: '#D1A054'
+          });
+        });
       
   }
   else {
