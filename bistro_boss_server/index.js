@@ -33,7 +33,10 @@ async function run() {
 
     // Get the database and collection on which to run the operation
     const menuCollection = client.db("bistroDb").collection("menu");
+
     const reviewsCollection = client.db("bistroDb").collection("reviews");
+    const cartCollection = client.db("bistroDb").collection("cart");
+
     app.get("/menu", async (req, res) => {
       const menuItems = await menuCollection.find().toArray();
       res.send(menuItems);
@@ -44,15 +47,21 @@ async function run() {
       res.send(reviewItems);
     })
 
+    // carts collection 
+    app.post("/carts", async (req, res) => {
+      const item = req.body;
+      console.log(item);
+      const result = await cartCollection.insertOne(item);
+      res.send(result);
+    })
 
-
-    // Send a ping to confirm a successful connection
+    
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
-    // Ensures that the client will close when you finish/error
+    
     //await client.close();
   }
 }
@@ -65,3 +74,15 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`Website is running on ${port}`);
 });
+
+/**
+ * ------------------------
+ * Naming Conventions
+ * ------------------------
+ * app.get('/users') 
+ * app.get('/users/:id')
+ * app.post('/users')
+ * app.put('/users/:id')
+ * app.delete('/users/:id')
+ * ------------------------
+ */
