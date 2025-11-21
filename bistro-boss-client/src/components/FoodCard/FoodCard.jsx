@@ -5,19 +5,23 @@
 import Swal from "sweetalert2";
 import useAuth from "../../Hooks/useAuth";
 import { useLocation, useNavigate } from "react-router-dom";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
 
 const FoodCard = ({ item }) => {
   const { image, price, name, recipe, _id } = item || {};
   const {user} = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const axiosSecure = useAxiosSecure();
   
   
   
-  const handleAddToCart = food => {
+  const handleAddToCart = () => {
+    console.log('handleAddToCart called');
+    console.log('User:', user);
+    console.log('User email:', user?.email);
+    
     if(user && user.email){
-      // TODO: send cart items to the database when logged in
-      console.log('User is logged in, add to cart functionality will be implemented here');
       const cartItem = {
         menuId: _id,
         name,
@@ -25,20 +29,39 @@ const FoodCard = ({ item }) => {
         price,
         email: user.email
       };
-      // Example POST request to add item to cart
-      axios.post('http://localhost:5000/carts', cartItem)
+      
+      console.log('Sending cart item:', cartItem);
+      console.log('Using axiosSecure:', axiosSecure);
+      
+      // Use secure axios instance to POST cart item
+      axiosSecure.post('/carts', cartItem)
         .then(response => {
-          if (response.data.insertedId) {
+          console.log('Response received:', response);
+          console.log('Response data:', response.data);
+          
+          // server could return insertedId or acknowledgement
+          const data = response.data || {};
+          if (data.insertedId || data.acknowledged) {
             Swal.fire({
               icon: 'success',
               title: 'Added to Cart',
               text: `${name} has been added to your cart.`,
               confirmButtonColor: '#D1A054'
             });
+          } else {
+            // fallback success message
+            Swal.fire({
+              icon: 'success',
+              title: 'Added to Cart',
+              text: `${name} was processed.`,
+              confirmButtonColor: '#D1A054'
+            });
           }
         })
         .catch(error => {
           console.error('Error adding item to cart:', error);
+          console.error('Error response:', error.response);
+          console.error('Error message:', error.message);
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -86,7 +109,7 @@ const FoodCard = ({ item }) => {
         <div className="mt-6 flex justify-center">
           <button
             
-            onClick={() => handleAddToCart(item)}
+            onClick={handleAddToCart}
             className="
               inline-flex items-center justify-center cursor-pointer
               px-8 h-12 rounded-md
